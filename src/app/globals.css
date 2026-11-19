@@ -99,7 +99,10 @@ body, header, nav, aside, main, section, article, a, button, input, textarea, se
 }
 button, a { transition-property: background-color, border-color, color, box-shadow, transform, opacity; }
 
-:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 12px; }
+/* В слое base, чтобы поля со своим кольцом фокуса (focus:outline-none) могли его отключить. */
+@layer base {
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 12px; }
+}
 
 .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 .pt-safe { padding-top: env(safe-area-inset-top); }

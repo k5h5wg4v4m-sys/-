@@ -1,7 +1,14 @@
+import { redirect } from "next/navigation";
 import { BottomNav } from "@/components/nav/BottomNav";
 import { SideNav } from "@/components/nav/SideNav";
+import { getSession, onboardingStep } from "@/lib/auth";
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+export default async function MainLayout({ children }: { children: React.ReactNode }) {
+  // Вошёл, но не задал пароль или не заполнил анкету — сначала заканчиваем регистрацию.
+  const session = await getSession();
+  const step = session && onboardingStep(session);
+  if (step) redirect(step);
+
   return (
     <div className="flex min-h-dvh">
       <SideNav />
