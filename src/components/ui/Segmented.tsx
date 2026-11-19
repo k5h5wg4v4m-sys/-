@@ -1,5 +1,7 @@
 "use client";
 
+import { cn } from "@/lib/cn";
+
 export function Segmented<T extends string>({
   value,
   options,
@@ -8,13 +10,13 @@ export function Segmented<T extends string>({
   label,
 }: {
   value: T | undefined;
-  options: { value: T; label: string }[];
+  options: { value: T; label: string; icon?: React.ReactNode }[];
   onChange: (v: T) => void;
   disabled?: boolean;
   label: string;
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex flex-wrap gap-1 rounded-2xl bg-surface-2 p-1">
+    <div role="radiogroup" aria-label={label} className="inline-flex gap-1 rounded-2xl bg-bg p-1 shadow-sm ring-1 ring-border">
       {options.map((o) => {
         const active = o.value === value;
         return (
@@ -24,11 +26,13 @@ export function Segmented<T extends string>({
             role="radio"
             aria-checked={active}
             disabled={disabled}
-            onClick={() => onChange(o.value)}
-            className={`rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 disabled:opacity-60 ${
-              active ? "bg-surface text-text shadow-soft" : "text-muted hover:text-text"
-            }`}
+            onClick={() => !active && onChange(o.value)}
+            className={cn(
+              "flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-semibold active:scale-[0.97] disabled:opacity-60",
+              active ? "bg-primary text-on-primary shadow-sm" : "text-muted hover:text-text",
+            )}
           >
+            {o.icon}
             {o.label}
           </button>
         );

@@ -2,56 +2,83 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* TABYLGA Premium Green — токены. Только они используются в интерфейсе (см. DESIGN.md). */
 :root {
-  --bg: #f6f7f9;
-  --surface: #ffffff;
-  --surface-2: #f0f2f5;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #e5e7eb;
-  --primary: #0e7c66;
-  --primary-hover: #0b6a57;
-  --primary-soft: #e3f4ef;
+  --bg: #ffffff;
+  --card: #f5f7f6;
+  --elevated: #ffffff;
+  --text: #171c19;
+  --muted: #858d88;
+  --border: #e7ece9;
+  --primary: #159b69;
+  --primary-strong: #08764e;
+  --primary-soft: #e8f7f0;
   --on-primary: #ffffff;
-  --danger: #dc2626;
-  --shadow-soft: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px rgb(15 23 42 / 0.06);
+  --danger: #e5484d;
+  --danger-soft: #fdecec;
+  --warning: #b7791f;
+  --warning-soft: #fdf3e1;
+  --shadow-sm: 0 1px 2px rgb(23 28 25 / 0.05);
+  --shadow-md: 0 1px 2px rgb(23 28 25 / 0.04), 0 6px 20px rgb(23 28 25 / 0.07);
+  --shadow-lg: 0 10px 40px rgb(23 28 25 / 0.14);
+  --shadow-primary: 0 8px 22px rgb(21 155 105 / 0.35);
 }
 
 .dark {
-  --bg: #0b0f14;
-  --surface: #121821;
-  --surface-2: #19212c;
-  --text: #e6edf3;
-  --muted: #8b98a8;
-  --border: #243040;
-  --primary: #2bb594;
-  --primary-hover: #36c7a4;
-  --primary-soft: #12352d;
-  --on-primary: #04130f;
-  --danger: #f87171;
-  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
+  --bg: #101613;
+  --card: #19231d;
+  --elevated: #1e2a23;
+  --text: #f3f7f4;
+  --muted: #a1ada5;
+  --border: #29362e;
+  --primary: #20b77a;
+  --primary-strong: #3fcb93;
+  --primary-soft: #163327;
+  --on-primary: #ffffff;
+  --danger: #e5484d;
+  --danger-soft: #3a1c1e;
+  --warning: #e8b04a;
+  --warning-soft: #3a2f17;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 12px 40px rgb(0 0 0 / 0.5);
+  --shadow-primary: 0 8px 22px rgb(32 183 122 / 0.3);
 }
 
 @theme inline {
   --color-bg: var(--bg);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
+  --color-card: var(--card);
+  --color-elevated: var(--elevated);
   --color-text: var(--text);
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
+  --color-primary-strong: var(--primary-strong);
   --color-primary-soft: var(--primary-soft);
   --color-on-primary: var(--on-primary);
   --color-danger: var(--danger);
-  --shadow-soft: var(--shadow-soft);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-primary: var(--shadow-primary);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --animate-fade-up: fade-up 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 
-  @keyframes fade-up {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: none; }
-  }
+  --animate-page: page-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-rise: rise 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-toast: toast-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-fade: fade 0.2s ease-out both;
+  --animate-pop: pop 0.24s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-shimmer: shimmer 1.4s ease-in-out infinite;
+
+  @keyframes page-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(-12px) scale(0.96); } to { opacity: 1; transform: none; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: none; } }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 }
 
 html { color-scheme: light; }
@@ -61,7 +88,21 @@ body {
   background: var(--bg);
   color: var(--text);
   -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
 }
+
+/* Плавное переключение темы */
+body, header, nav, aside, main, section, article, a, button, input, textarea, select, li, div {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.25s;
+  transition-timing-function: ease;
+}
+button, a { transition-property: background-color, border-color, color, box-shadow, transform, opacity; }
+
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 12px; }
+
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pt-safe { padding-top: env(safe-area-inset-top); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

@@ -1,23 +1,31 @@
 import type { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/cn";
 
 export function EmptyState({
   icon: Icon,
+  illustration,
   title,
   text,
   children,
+  className,
 }: {
-  icon: LucideIcon;
+  icon?: LucideIcon;
+  illustration?: React.ReactNode;
   title: string;
   text?: string;
   children?: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="flex animate-fade-up flex-col items-center rounded-3xl border border-border bg-surface px-6 py-14 text-center shadow-soft">
-      <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-primary-soft text-primary">
-        <Icon className="size-8" />
-      </div>
-      <h2 className="text-lg font-semibold">{title}</h2>
-      {text && <p className="mt-1.5 max-w-sm text-sm text-muted">{text}</p>}
+    <div className={cn("flex animate-rise flex-col items-center px-6 py-12 text-center", className)}>
+      {illustration ??
+        (Icon && (
+          <div className="mb-5 flex size-20 items-center justify-center rounded-[28px] bg-primary-soft text-primary">
+            <Icon className="size-9" strokeWidth={1.8} />
+          </div>
+        ))}
+      <h2 className="text-lg font-bold">{title}</h2>
+      {text && <p className="mt-1.5 max-w-xs text-[15px] text-muted">{text}</p>}
       {children && <div className="mt-6">{children}</div>}
     </div>
   );

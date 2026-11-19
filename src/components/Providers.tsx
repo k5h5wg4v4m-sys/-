@@ -1,11 +1,12 @@
 "use client";
 
 import { ThemeProvider } from "next-themes";
+import { ToastProvider } from "@/components/ui/Toast";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      {children}
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} themes={["light", "dark"]}>
+      <ToastProvider>{children}</ToastProvider>
     </ThemeProvider>
   );
 }
