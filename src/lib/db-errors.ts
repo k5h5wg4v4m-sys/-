@@ -20,6 +20,11 @@ export const DB_ERROR_CODES = [
   "proof_required",
   "bad_amount",
   "bad_method",
+  "bad_birth_year",
+  "bad_category",
+  "bad_description",
+  "bad_address",
+  "bad_message",
 ] as const;
 
 export type DbErrorCode = (typeof DB_ERROR_CODES)[number];
