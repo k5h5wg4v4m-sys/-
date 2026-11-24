@@ -11,4 +11,9 @@ for f in migrations/*.sql; do
   echo "migrate: $f"
   $PSQL -d "$DB" -f "$f"
 done
-$PSQL -d "$DB" -f tests/01_flows.sql
+for f in tests/[0-9][0-9]_*.sql; do
+  case "$f" in tests/00_*) continue ;; esac
+  echo "test: $f"
+  $PSQL -d "$DB" -f "$f"
+done
+echo "OK: все тесты прошли"

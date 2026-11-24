@@ -10,6 +10,9 @@ cp .env.example .env.local   # заполните NEXT_PUBLIC_SUPABASE_URL и NE
 npm run dev
 ```
 
+База, вход единственного аккаунта и админ-панель: `supabase/README.md`.
+Проверка миграций на локальном PostgreSQL: `PGUSER=postgres supabase/tests/run.sh`.
+
 ## Структура
 
 - `src/app/(main)` — экраны с навигацией (нижнее меню на телефоне, боковое на компьютере)

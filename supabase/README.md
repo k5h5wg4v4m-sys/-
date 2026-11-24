@@ -10,6 +10,7 @@
 | `004_chat.sql` | Чаты, участники, сообщения, поддержка, `start_chat`, `send_message`, `get_my_chats`, `send_support_message` |
 | `005_storage.sql` | Бакеты Storage с лимитами размера и типов, доступ только к своей папке |
 | `006_jobs.sql` | Автозавершение объявлений каждые 5 минут (pg_cron), Realtime |
+| `007_single_account.sql` | Закрытый режим: аккаунт можно иметь только номерам из `signup_allowlist` (сейчас 996700700700, роль admin выдаётся автоматически) |
 
 Таблица пользователей — `auth.users` (Supabase Auth, пароли хранятся как bcrypt-хеш). Остальные таблицы из ТЗ — в `public`.
 
@@ -17,7 +18,7 @@
 
 **Вариант A — SQL Editor (без установки программ).**
 1. Supabase → Database → Extensions: включите `pg_cron` (до шага 2).
-2. SQL Editor → вставьте и выполните файлы `001` … `006` строго по порядку.
+2. SQL Editor → вставьте и выполните файлы `001` … `007` строго по порядку.
 
 **Вариант B — Supabase CLI.**
 ```bash
@@ -26,16 +27,26 @@ npx supabase link --project-ref <ref проекта>
 npx supabase db push
 ```
 
-## Первый администратор
+## Закрытый режим: один аккаунт +996 700 700 700
 
-1. Зарегистрируйтесь на сайте по номеру телефона.
-2. В SQL Editor выполните (номер без плюса):
-```sql
-insert into public.admins (user_id, role)
-select id, 'admin' from public.profiles where phone = '996XXXXXXXXX';
+Регистрации нет. Войти может только номер из таблицы `signup_allowlist` (миграция 007), он сразу получает роль `admin`.
+
+1. Authentication → Sign In / Providers:
+   - выключите **Allow new users to sign up**;
+   - включите провайдер **Phone** (вход по номеру и паролю). Supabase просит данные SMS-провайдера; при входе по паролю SMS не отправляются, но они понадобятся, когда откроем регистрацию.
+2. Создайте аккаунт (пароль спросит в терминале):
+```bash
+# .env.local: NEXT_PUBLIC_SUPABASE_URL и SUPABASE_SERVICE_ROLE_KEY (Project Settings → API)
+node --env-file=.env.local scripts/create-account.mjs +996700700700
 ```
-Роль `moderator` (объявления, жалобы, поддержка — без денег): то же самое с `'moderator'`.
-Назначать роли можно только через SQL Editor / service role — из приложения это невозможно.
+   Этим же скриптом меняется пароль. Любой другой номер база отклонит (`signup_closed`).
+3. Войдите на сайте: Профиль → Войти. Админ-панель: Профиль → Админ-панель → Реквизиты — заполните банк и включите его, после этого пользователь видит его на экране «Баланс».
+
+Добавить ещё номер (или модератора), только через SQL Editor:
+```sql
+insert into public.signup_allowlist (phone, role) values ('996XXXXXXXXX', null);  -- null | 'admin' | 'moderator'
+```
+Открыть регистрацию для всех: новая миграция, удаляющая триггеры `auth_users_allowlist_insert` и `auth_users_allowlist_phone`.
 
 ## Правила, которые держит база
 

@@ -54,3 +54,22 @@ export function Input({
     </div>
   );
 }
+
+export function Textarea({
+  className,
+  invalid,
+  ...rest
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { invalid?: boolean }) {
+  return (
+    <textarea
+      aria-invalid={invalid || undefined}
+      className={cn(
+        "min-h-24 w-full rounded-2xl border border-border bg-card px-4 py-3 text-base text-text placeholder:text-muted",
+        "focus:border-primary focus:bg-bg focus:ring-4 focus:ring-primary/15 focus:outline-none",
+        invalid && "border-danger focus:border-danger focus:ring-danger/15",
+        className,
+      )}
+      {...rest}
+    />
+  );
+}
