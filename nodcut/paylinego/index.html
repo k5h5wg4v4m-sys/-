@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'">
+<title>PaylineGo — пополнение с ручной проверкой</title>
+<meta name="description" content="Пополнение баланса переводом по реквизитам: отправьте чек, оператор проверит платёж и зачислит сумму.">
+<meta name="theme-color" content="#0f7a5a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff; --card: #f4f7f5; --elevated: #ffffff; --text: #0f1a15; --muted: #5d6b64;
+    --border: #e3eae6; --primary: #0f7a5a; --primary-strong: #0b6148; --primary-soft: #e4f3ec;
+    --on-primary: #ffffff; --shadow: 0 10px 30px rgba(15, 26, 21, .08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1512; --card: #17201b; --elevated: #1c2621; --text: #eef4f1; --muted: #9aaba3;
+      --border: #26332d; --primary: #2bbd8a; --primary-strong: #4fd1a2; --primary-soft: #173a2e;
+      --on-primary: #06130d; --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.55 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+  header { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  .bar { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: .01em; color: var(--text); text-decoration: none; }
+  .mark { width: 34px; height: 34px; border-radius: 11px; background: var(--primary); display: grid; place-items: center; }
+  .seg { display: inline-flex; gap: 2px; padding: 3px; border-radius: 14px; background: var(--card); border: 1px solid var(--border); }
+  .seg button { border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 11px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); }
+  .hero { padding: 56px 0 40px; display: grid; gap: 32px; align-items: center; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: var(--primary-soft); color: var(--primary); font-size: 13px; font-weight: 700; }
+  .pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  h1 { font-size: clamp(32px, 6vw, 52px); line-height: 1.08; letter-spacing: -.02em; margin: 16px 0 14px; font-weight: 800; }
+  .lead { font-size: 18px; color: var(--muted); margin: 0 0 28px; max-width: 34em; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 54px; padding: 0 24px; border-radius: 16px; font-weight: 700; font-size: 16px; border: 0; }
+  .btn[disabled] { background: var(--card); color: var(--muted); border: 1px dashed var(--border); cursor: default; }
+  .note { margin-top: 12px; font-size: 14px; color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; }
+  .demo { padding: 20px; box-shadow: var(--shadow); background: var(--elevated); }
+  .demo-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .demo-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .demo-row:first-child { padding-top: 0; }
+  .demo-k { color: var(--muted); font-size: 14px; }
+  .demo-v { font-weight: 700; }
+  .badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .b-wait { background: #fdf3e1; color: #9a6514; }
+  .b-ok { background: var(--primary-soft); color: var(--primary); }
+  @media (prefers-color-scheme: dark) { .b-wait { background: #3a2f17; color: #e8b04a; } }
+  section { padding: 40px 0; }
+  h2 { font-size: clamp(24px, 4vw, 32px); letter-spacing: -.01em; margin: 0 0 8px; font-weight: 800; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  .grid { display: grid; gap: 12px; }
+  .step { padding: 20px; display: flex; gap: 16px; align-items: flex-start; }
+  .num { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--primary-soft); color: var(--primary); display: grid; place-items: center; font-weight: 800; }
+  .step h3, .feat h3 { margin: 2px 0 4px; font-size: 17px; }
+  .step p, .feat p { margin: 0; color: var(--muted); font-size: 15px; }
+  .feat { padding: 20px; }
+  .ico { width: 44px; height: 44px; border-radius: 14px; background: var(--primary-soft); color: var(--primary); display: grid; place-items: center; margin-bottom: 14px; }
+  .biz { padding: 28px; background: var(--primary-soft); border-color: color-mix(in srgb, var(--primary) 25%, transparent); }
+  .biz h2 { color: var(--text); }
+  .biz p { margin: 0; color: var(--muted); }
+  .soon { display: inline-block; margin-top: 16px; font-size: 13px; font-weight: 700; color: var(--primary); }
+  footer { border-top: 1px solid var(--border); padding: 28px 0 40px; color: var(--muted); font-size: 14px; }
+  .rise { animation: rise .5s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+  @media (min-width: 720px) {
+    .hero { grid-template-columns: 1.15fr .85fr; padding: 80px 0 56px; }
+    .g4 { grid-template-columns: repeat(2, 1fr); }
+    .g3 { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 980px) { .g4 { grid-template-columns: repeat(4, 1fr); } .step { flex-direction: column; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="#top" aria-label="PaylineGo">
+      <span class="mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h12"/><path d="M12 6l6 6-6 6"/></svg>
+      </span>
+      PaylineGo
+    </a>
+    <div class="seg" role="group" aria-label="Язык / Тил">
+      <button type="button" data-lang="ru" aria-pressed="true">RU</button>
+      <button type="button" data-lang="ky" aria-pressed="false">KY</button>
+    </div>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+  <div class="hero">
+    <div class="rise">
+      <span class="pill" data-i="pill"></span>
+      <h1 data-i="title"></h1>
+      <p class="lead" data-i="lead"></p>
+      <button class="btn" type="button" disabled data-i="cta"></button>
+      <p class="note" data-i="ctaNote"></p>
+    </div>
+    <div class="card demo rise" style="animation-delay:.1s" aria-hidden="true">
+      <div class="demo-row"><span class="demo-k" data-i="dAmount"></span><span class="demo-v" data-i="dAmountV"></span></div>
+      <div class="demo-row"><span class="demo-k" data-i="dProof"></span><span class="demo-v" data-i="dProofV"></span></div>
+      <div class="demo-row"><span class="demo-k" data-i="dStatus1"></span><span class="badge b-wait" data-i="sWait"></span></div>
+      <div class="demo-row"><span class="demo-k" data-i="dStatus2"></span><span class="badge b-ok" data-i="sOk"></span></div>
+    </div>
+  </div>
+
+  <section aria-labelledby="how">
+    <h2 id="how" data-i="howTitle"></h2>
+    <p class="sub" data-i="howSub"></p>
+    <ol class="grid g4" style="list-style:none;margin:0;padding:0">
+      <li class="card step"><span class="num">1</span><div><h3 data-i="s1t"></h3><p data-i="s1p"></p></div></li>
+      <li class="card step"><span class="num">2</span><div><h3 data-i="s2t"></h3><p data-i="s2p"></p></div></li>
+      <li class="card step"><span class="num">3</span><div><h3 data-i="s3t"></h3><p data-i="s3p"></p></div></li>
+      <li class="card step"><span class="num">4</span><div><h3 data-i="s4t"></h3><p data-i="s4p"></p></div></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="why">
+    <h2 id="why" data-i="whyTitle"></h2>
+    <p class="sub" data-i="whySub"></p>
+    <div class="grid g3">
+      <div class="card feat">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <h3 data-i="f1t"></h3><p data-i="f1p"></p>
+      </div>
+      <div class="card feat">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h6"/></svg></div>
+        <h3 data-i="f2t"></h3><p data-i="f2p"></p>
+      </div>
+      <div class="card feat">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3 data-i="f3t"></h3><p data-i="f3p"></p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="card biz">
+      <h2 data-i="bizTitle"></h2>
+      <p data-i="bizText"></p>
+      <span class="soon" data-i="bizSoon"></span>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap" data-i="footer"></div>
+</footer>
+
+<script>
+(function () {
+  var T = {
+    ru: {
+      htmlTitle: "PaylineGo — пополнение с ручной проверкой",
+      pill: "Скоро открытие",
+      title: "Пополнение баланса с ручной проверкой",
+      lead: "Переведите деньги по реквизитам и отправьте чек. Оператор сверит платёж, и сумма появится на балансе. Без автоматических зачислений по непроверенным чекам.",
+      cta: "Открыть приложение",
+      ctaNote: "Приложение готовится к запуску. Кнопка заработает в день открытия.",
+      dAmount: "Сумма", dAmountV: "1 500 сом",
+      dProof: "Подтверждение", dProofV: "Фото чека",
+      dStatus1: "Заявка отправлена", dStatus2: "После проверки",
+      sWait: "На проверке", sOk: "Зачислено",
+      howTitle: "Как это работает",
+      howSub: "Четыре шага от перевода до зачисления.",
+      s1t: "Выберите банк", s1p: "Откройте реквизиты нужного банка или отсканируйте QR-код.",
+      s2t: "Переведите сумму", s2p: "Сделайте перевод с карты или из приложения своего банка.",
+      s3t: "Отправьте подтверждение", s3p: "Укажите номер транзакции или прикрепите фото чека.",
+      s4t: "Дождитесь проверки", s4p: "Оператор сверит платёж и зачислит сумму или укажет причину отказа.",
+      whyTitle: "Почему ручная проверка",
+      whySub: "Деньги зачисляются только тогда, когда платёж действительно пришёл.",
+      f1t: "Только после проверки", f1p: "Сумма зачисляется после того, как оператор убедится, что перевод получен. Одну заявку нельзя зачислить дважды.",
+      f2t: "Вся история на виду", f2p: "Каждая заявка и каждое изменение баланса сохраняются в истории операций.",
+      f3t: "Понятный ответ", f3p: "Если платёж не подтвердился, вы увидите причину отказа и сможете отправить заявку заново.",
+      bizTitle: "Для бизнеса",
+      bizText: "Подключение PaylineGo к вашему сайту или приложению через API-ключи.",
+      bizSoon: "В разработке",
+      footer: "© 2026 PaylineGo · Кыргызстан · сом (KGS)"
+    },
+    ky: {
+      htmlTitle: "PaylineGo — кол менен текшерилген толуктоо",
+      pill: "Жакында ачылат",
+      title: "Балансты кол менен текшерүү аркылуу толуктоо",
+      lead: "Акчаны реквизиттерге которуп, чекти жөнөтүңүз. Оператор төлөмдү текшерет жана сумма балансыңызга түшөт. Текшерилбеген чек боюнча автоматтык түрдө эч нерсе түшпөйт.",
+      cta: "Тиркемени ачуу",
+      ctaNote: "Тиркеме ишке киргизүүгө даярдалууда. Баскыч ачылган күнү иштейт.",
+      dAmount: "Сумма", dAmountV: "1 500 сом",
+      dProof: "Ырастоо", dProofV: "Чектин сүрөтү",
+      dStatus1: "Өтүнмө жөнөтүлдү", dStatus2: "Текшерүүдөн кийин",
+      sWait: "Текшерилүүдө", sOk: "Түштү",
+      howTitle: "Бул кантип иштейт",
+      howSub: "Которуудан баланска түшкөнгө чейин төрт кадам.",
+      s1t: "Банкты тандаңыз", s1p: "Керектүү банктын реквизиттерин ачыңыз же QR-кодду сканерлеңиз.",
+      s2t: "Сумманы которуңуз", s2p: "Картадан же банкыңыздын тиркемесинен которуңуз.",
+      s3t: "Ырастоону жөнөтүңүз", s3p: "Транзакция номерин жазыңыз же чектин сүрөтүн тиркеңиз.",
+      s4t: "Текшерүүнү күтүңүз", s4p: "Оператор төлөмдү текшерип, сумманы түшүрөт же четке кагуунун себебин көрсөтөт.",
+      whyTitle: "Эмне үчүн кол менен текшерүү",
+      whySub: "Акча төлөм чындап келгенде гана түшөт.",
+      f1t: "Текшерүүдөн кийин гана", f1p: "Сумма оператор которуу келгенин текшергенден кийин түшөт. Бир өтүнмө эки жолу түшүрүлбөйт.",
+      f2t: "Бардык тарых көз алдыңызда", f2p: "Ар бир өтүнмө жана баланстын ар бир өзгөрүүсү операциялар тарыхында сакталат.",
+      f3t: "Түшүнүктүү жооп", f3p: "Төлөм ырасталбаса, четке кагуунун себебин көрүп, өтүнмөнү кайра жөнөтө аласыз.",
+      bizTitle: "Бизнес үчүн",
+      bizText: "PaylineGo'ну сайтыңызга же тиркемеңизге API ачкычтары аркылуу туташтыруу.",
+      bizSoon: "Иштелип жатат",
+      footer: "© 2026 PaylineGo · Кыргызстан · сом (KGS)"
+    }
+  };
+  var KEY = "paylinego-lang";
+  function apply(lang) {
+    var d = T[lang] || T.ru;
+    document.documentElement.lang = lang;
+    document.title = d.htmlTitle;
+    var nodes = document.querySelectorAll("[data-i]");
+    for (var i = 0; i < nodes.length; i++) {
+      var k = nodes[i].getAttribute("data-i");
+      if (d[k] != null) nodes[i].textContent = d[k];
+    }
+    var btns = document.querySelectorAll("[data-lang]");
+    for (var j = 0; j < btns.length; j++) btns[j].setAttribute("aria-pressed", String(btns[j].getAttribute("data-lang") === lang));
+  }
+  var saved = "ru";
+  try { saved = localStorage.getItem(KEY) || saved; } catch (e) {}
+  apply(saved === "ky" ? "ky" : "ru");
+  document.querySelector(".seg").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-lang]");
+    if (!b) return;
+    var lang = b.getAttribute("data-lang");
+    apply(lang);
+    try { localStorage.setItem(KEY, lang); } catch (err) {}
+  });
+})();
+</script>
+</body>
+</html>
