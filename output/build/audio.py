@@ -18,15 +18,14 @@ for s in SENTS:
 vo.export(f"{OUT}/vo_raw.wav", format="wav")
 # deeper/warmer documentary voice: slight pitch drop with preserved formants, EQ, compression, short room
 subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", f"{OUT}/vo_raw.wav", "-af",
-    "rubberband=pitch=0.95:formant=preserved,highpass=f=55,bass=g=3.5:f=140,equalizer=f=2800:t=q:w=1.2:g=1.5,"
-    "equalizer=f=7000:t=q:w=1.5:g=-2.5,acompressor=threshold=-22dB:ratio=3:attack=6:release=120:makeup=2,"
-    "aecho=0.85:0.6:28|47:0.12|0.07,loudnorm=I=-16:TP=-1.5:LRA=7", "-ar", str(SR), "-ac", "1", f"{OUT}/vo.wav"], check=True)
+    "highpass=f=60,bass=g=1.5:f=130,acompressor=threshold=-20dB:ratio=2.5:attack=8:release=150:makeup=1.5,"
+    "loudnorm=I=-16:TP=-1.5:LRA=7", "-ar", str(SR), "-ac", "1", f"{OUT}/vo.wav"], check=True)
 
 # ------------------------------------------------ 2. score
 t = np.arange(N) / SR
 def hz(m): return 440.0 * 2 ** ((m - 69) / 12)
 def env_seg(n, a, r):
-    e = np.ones(n); ai, ri = int(a * SR), int(r * SR)
+    e = np.ones(n); ai, ri = min(int(a * SR), n // 2), min(int(r * SR), n // 2)
     e[:ai] = np.linspace(0, 1, ai) ** 2; e[-ri:] *= np.linspace(1, 0, ri) ** 1.5
     return e
 

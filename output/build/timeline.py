@@ -1,8 +1,9 @@
 import json
 from narration import SCENES
-VO=json.load(open("/tmp/claude-0/ftx/vo/index.json"))
+import os
+VO=json.load(open(os.environ.get("VO_INDEX","/tmp/claude-0/ftx/vo_el/index.json")))
 FPS=30; DUR=120.0
-START=1.2; GAP=0.45; SCENE_GAP=0.75
+START=0.9; GAP=0.34; SCENE_GAP=0.6
 SENTS=[]
 t=START; prev=0
 for v in VO:
